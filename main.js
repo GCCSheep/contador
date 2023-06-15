@@ -1,6 +1,12 @@
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
-const fs = require('fs');
-const { app, BrowserWindow, ipcMain } = require('electron');
+
+async function handleFileOpen() {
+    const { canceled, filePaths } = await dialog.showOpenDialog();
+    if (!canceled) {
+        return filePaths[0];
+    }
+}
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -11,15 +17,8 @@ function createWindow() {
     mainWindow.loadFile('index.html');
 }
 
-function handleSetTitle(event, title) {
-    const webContents = event.sender;
-    const win = BrowserWindow.fromWebContents(webContents);
-    win.setTitle(title);
-}
-
 app.whenReady().then(() => {
-    ipcMain.handle('patients', () => JSON.parse(fs.readFileSync(path.join(__dirname, 'patients.json'))));
-    ipcMain.on('set-title', handleSetTitle);
+    ipcMain.handle('dialog:openFile', handleFileOpen);
     createWindow();
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) {
