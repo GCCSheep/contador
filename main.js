@@ -9,7 +9,7 @@ app.whenReady().then(() => {
             createWindow();
         }
     });
-    ipcMain.on('set-title', handleSetTitle);
+    ipcMain.on('set-patients', handleSetPatients);
 });
 
 app.on('window-all-closed', () => {
@@ -30,8 +30,7 @@ function createWindow() {
     });
 }
 
-async function handleSetTitle(event, title) {
-    const webContents = event.sender;
-    const win = BrowserWindow.fromWebContents(webContents);
-    win.setTitle(title);
+function handleSetPatients(event, patients) {
+    console.log(patients);
+    fs.writeFileSync(path.join(__dirname, 'patients.json'), patients);
 }

@@ -1,5 +1,30 @@
+const addPatientButton = document.querySelector('button.add-patient');
+const tableBody = document.querySelector('table.patients tbody');
+const saveButton = document.querySelector('button.save');
+const cancelButton = document.querySelector('button.cancel');
+
+addPatientButton.addEventListener('click', () => {
+
+});
+
+saveButton.addEventListener('click', () => {
+    const patients = [];
+    const tableRows = tableBody.querySelectorAll('tr');
+    for (const tableRow of tableRows) {
+        patients.push({
+            name: tableRow.querySelector('.name input').value,
+            totalSessions: tableRow.querySelector('.total-sessions input').value,
+            heldSessions: tableRow.querySelector('.held-sessions input').value,
+        });
+    }
+    window.electronAPI.setPatients(JSON.stringify(patients));
+});
+
+cancelButton.addEventListener('click', () => {
+
+});
+
 window.electronAPI.onGetPatients((_event, patients) => {
-    const tableBody = document.querySelector('table.patients tbody');
     for (const patient of patients) {
         const tableRow = document.createElement('tr');
         const nameData = document.createElement('td');
@@ -19,7 +44,9 @@ window.electronAPI.onGetPatients((_event, patients) => {
         heldSessionsInput.min = '0';
         heldSessionsInput.value = patient.heldSessions;
         deleteButton.classList.add('delete-patient');
+        deleteButton.setAttribute('hidden', '');
         deleteButton.innerText = '+';
+        deleteButton.addEventListener('click', () => {});
         nameData.classList.add('name');
         nameData.insertAdjacentElement('beforeend', nameInput);
         totalSessionsData.classList.add('total-sessions');

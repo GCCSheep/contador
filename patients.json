@@ -1,17 +1,1 @@
-[
-    {
-        "name": "João",
-        "totalSessions": 12,
-        "heldSessions": 3
-    },
-    {
-        "name": "Guilherme",
-        "totalSessions": 15,
-        "heldSessions": 2
-    },
-    {
-        "name": "Maria",
-        "totalSessions": 2,
-        "heldSessions": 1
-    }   
-]
+[{"name":"João","totalSessions":"13","heldSessions":"3"},{"name":"Guilherme","totalSessions":"15","heldSessions":"2"},{"name":"Maria","totalSessions":"2","heldSessions":"1"}]
