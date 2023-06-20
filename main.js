@@ -23,23 +23,7 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         },
     });
-    const menu = Menu.buildFromTemplate([
-        {
-            label: app.name,
-            submenu: [
-                {
-                    click: () => mainWindow.webContents.send('update-counter', 1),
-                    label: 'Increment',
-                },
-                {
-                    click: () => mainWindow.webContents.send('update-counter', -1),
-                    label: 'Decrement',
-                }
-            ]
-        }
-    ]);
     mainWindow.loadFile('index.html');
-    Menu.setApplicationMenu(menu);
 }
 
 async function handleSetTitle(event, title) {
