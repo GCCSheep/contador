@@ -31,6 +31,5 @@ function createWindow() {
 }
 
 function handleSetPatients(event, patients) {
-    console.log(patients);
     fs.writeFileSync(path.join(__dirname, 'patients.json'), patients);
 }

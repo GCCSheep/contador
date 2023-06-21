@@ -1,5 +1,5 @@
 const addPatientButton = document.querySelector('button.add-patient');
-const tableBody = document.querySelector('table.patients tbody');
+const table = document.querySelector('table');
 const saveButton = document.querySelector('button.save');
 const cancelButton = document.querySelector('button.cancel');
 
@@ -9,7 +9,7 @@ addPatientButton.addEventListener('click', () => {
 
 saveButton.addEventListener('click', () => {
     const patients = [];
-    const tableRows = tableBody.querySelectorAll('tr');
+    const tableRows = table.querySelectorAll('tbody:first-of-type tr');
     for (const tableRow of tableRows) {
         patients.push({
             name: tableRow.querySelector('.name input').value,
@@ -17,11 +17,17 @@ saveButton.addEventListener('click', () => {
             heldSessions: tableRow.querySelector('.held-sessions input').value,
         });
     }
+    table.querySelector('tbody:last-of-type').remove();
+    generateTBodyCopy();
     window.electronAPI.setPatients(JSON.stringify(patients));
+    saveButton.setAttribute('disabled', '');
 });
 
 cancelButton.addEventListener('click', () => {
-
+    table.querySelector('tbody').remove();
+    table.querySelector('tbody').removeAttribute('hidden');
+    generateTBodyCopy();
+    saveButton.setAttribute('disabled', '');
 });
 
 window.electronAPI.onGetPatients((_event, patients) => {
@@ -59,6 +65,24 @@ window.electronAPI.onGetPatients((_event, patients) => {
         tableRow.insertAdjacentElement('beforeend', totalSessionsData);
         tableRow.insertAdjacentElement('beforeend', heldSessionsData);
         tableRow.insertAdjacentElement('beforeend', actionsData);
-        tableBody.insertAdjacentElement('beforeend', tableRow);
+        table.querySelector('tbody').insertAdjacentElement('beforeend', tableRow);
     }
+    setSaveBtnTriggerers(table.querySelector('tbody'));
+    generateTBodyCopy();
 });
+
+function generateTBodyCopy() {
+    table.insertAdjacentElement('beforeend', table.querySelector('tbody').cloneNode(true));
+    table.querySelector('tbody:last-of-type').setAttribute('hidden', '');
+    setSaveBtnTriggerers(table.querySelector('tbody:last-of-type'));
+}
+
+function setSaveBtnTriggerers(tableBody) {
+    const saveBtnTriggerers = tableBody.querySelectorAll('input, button.delete-patient');
+    for (const saveBtnTriggerer of saveBtnTriggerers) {
+        saveBtnTriggerer.addEventListener(
+            saveBtnTriggerer.nodeName === 'INPUT' ? 'change' : 'click',
+            () => saveButton.removeAttribute('disabled')
+        );
+    }
+}
