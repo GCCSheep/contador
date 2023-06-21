@@ -10,6 +10,7 @@ addPatientButton.addEventListener('click', () => {
         heldSessions: '',
     });
     setSaveBtnTriggerers(table.querySelector('tr:last-of-type'));
+    setDeleteRowTriggerers(table.querySelector('tr:last-of-type'));
     saveButton.removeAttribute('disabled');
 });
 
@@ -43,6 +44,7 @@ window.electronAPI.onGetPatients((_event, patients) => {
     const tableRows = table.querySelectorAll('tbody tr');
     for (const tableRow of tableRows) {
         setSaveBtnTriggerers(tableRow);
+        setDeleteRowTriggerers(tableRow);
     }
     generateTBodyCopy();
 });
@@ -66,9 +68,9 @@ function insertRow(patient) {
     heldSessionsInput.min = '0';
     heldSessionsInput.value = patient.heldSessions;
     deleteButton.classList.add('delete-patient');
-    deleteButton.setAttribute('hidden', '');
+    deleteButton.setAttribute('title', 'Excluir paciente');
     deleteButton.innerText = '+';
-    deleteButton.addEventListener('click', () => {});
+    deleteButton.addEventListener('click', (e) => e.target.parentElement.parentElement.remove());
     nameData.classList.add('name');
     nameData.insertAdjacentElement('beforeend', nameInput);
     totalSessionsData.classList.add('total-sessions');
@@ -90,6 +92,7 @@ function generateTBodyCopy() {
     const tableRows = table.querySelectorAll('tbody:last-of-type tr');
     for (const tableRow of tableRows) {
         setSaveBtnTriggerers(tableRow);
+        setDeleteRowTriggerers(tableRow);
     }
 }
 
@@ -101,4 +104,10 @@ function setSaveBtnTriggerers(tableRow) {
             () => saveButton.removeAttribute('disabled')
         );
     }
+}
+
+function setDeleteRowTriggerers(tableRow) {
+    tableRow
+        .querySelector('button.delete-patient')
+        .addEventListener('click', (e) => e.target.parentElement.parentElement.remove());
 }
