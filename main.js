@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -24,6 +24,8 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js')
         },
     });
+    const menu = Menu.buildFromTemplate([]);
+    Menu.setApplicationMenu(menu);
     mainWindow.loadFile('index.html').then(() => {
         const filePath = path.join(__dirname, 'patients.json'); 
         mainWindow.webContents.send('get-patients', JSON.parse(fs.readFileSync(filePath)));

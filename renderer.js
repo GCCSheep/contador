@@ -9,8 +9,8 @@ addPatientButton.addEventListener('click', () => {
         totalSessions: '',
         heldSessions: '',
     });
-    setSaveBtnTriggerers(table.querySelector('tr:last-of-type'));
-    setDeleteRowTriggerers(table.querySelector('tr:last-of-type'));
+    setSaveBtnTriggerers(table.querySelector('tbody tr:last-of-type'));
+    setDeleteRowTriggerers(table.querySelector('tbody tr:last-of-type'));
     saveButton.removeAttribute('disabled');
 });
 
