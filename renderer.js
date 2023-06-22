@@ -3,6 +3,18 @@ const table = document.querySelector('table');
 const saveButton = document.querySelector('button.save');
 const cancelButton = document.querySelector('button.cancel');
 
+window.electronAPI.onGetPatients((_event, patients) => {
+    for (const patient of patients) {
+        insertRow(patient);
+    }
+    const tableRows = table.querySelectorAll('tbody tr');
+    for (const tableRow of tableRows) {
+        setSaveBtnTriggerers(tableRow);
+        setDeleteRowTriggerers(tableRow);
+    }
+    generateTBodyCopy();
+});
+
 addPatientButton.addEventListener('click', () => {
     insertRow({
         name: '',
@@ -35,18 +47,6 @@ cancelButton.addEventListener('click', () => {
     table.querySelector('tbody').removeAttribute('hidden');
     generateTBodyCopy();
     saveButton.setAttribute('disabled', '');
-});
-
-window.electronAPI.onGetPatients((_event, patients) => {
-    for (const patient of patients) {
-        insertRow(patient);
-    }
-    const tableRows = table.querySelectorAll('tbody tr');
-    for (const tableRow of tableRows) {
-        setSaveBtnTriggerers(tableRow);
-        setDeleteRowTriggerers(tableRow);
-    }
-    generateTBodyCopy();
 });
 
 function insertRow(patient) {

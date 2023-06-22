@@ -104,12 +104,12 @@ td {
     padding: 0;
 }
 
-td.name {
+th.name {
     width: 50%;
 }
 
-td.total-sessions,
-td.held-sessions {
+th.total-sessions,
+th.held-sessions {
     width: 20%;
 }
 

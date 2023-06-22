@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
-const fs = require('fs');
+const Store = require('electron-store');
+const store = new Store();
 
 app.whenReady().then(() => {
     createWindow();
@@ -27,11 +28,14 @@ function createWindow() {
     const menu = Menu.buildFromTemplate([]);
     Menu.setApplicationMenu(menu);
     mainWindow.loadFile('index.html').then(() => {
-        const filePath = path.join(__dirname, 'patients.json'); 
-        mainWindow.webContents.send('get-patients', JSON.parse(fs.readFileSync(filePath)));
+        let patients = store.get('patients');
+        if (!patients) {
+            patients = [];
+        }
+        mainWindow.webContents.send('get-patients', JSON.parse(patients));
     });
 }
 
 function handleSetPatients(event, patients) {
-    fs.writeFileSync(path.join(__dirname, 'patients.json'), patients);
+    store.set('patients', patients);
 }
