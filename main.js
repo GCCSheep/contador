@@ -22,11 +22,11 @@ app.on('window-all-closed', () => {
 function createWindow() {
     const mainWindow = new BrowserWindow({
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, 'preload.js'),
         },
     });
-    const menu = Menu.buildFromTemplate([]);
-    Menu.setApplicationMenu(menu);
+    // const menu = Menu.buildFromTemplate([]);
+    // Menu.setApplicationMenu(menu);
     mainWindow.loadFile('index.html').then(() => {
         let patients = store.get('patients');
         if (!patients) {
