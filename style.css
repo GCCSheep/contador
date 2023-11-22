@@ -87,6 +87,13 @@ button[disabled]:active {
     background-color: darkgrey;
 }
 
+select {
+    font: inherit;
+    margin-bottom: 10px;
+    cursor: pointer;
+    padding: 5px;
+}
+
 table {
     border-collapse: collapse;
     border: 1px solid black;

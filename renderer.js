@@ -1,7 +1,11 @@
 const addPatientButton = document.querySelector('button.add-patient');
+const yearSelector = document.querySelector('select.year');
+const monthSelector = document.querySelector('select.month');
 const table = document.querySelector('table');
 const saveButton = document.querySelector('button.save');
 const cancelButton = document.querySelector('button.cancel');
+let year = '2023';
+let month = '01';
 
 window.electronAPI.onGetPatients((_event, patients) => {
     for (const patient of patients) {
@@ -28,6 +32,10 @@ addPatientButton.addEventListener('click', () => {
     setDeleteRowTriggerers(table.querySelector('tbody tr:last-of-type'));
     saveButton.removeAttribute('disabled');
 });
+
+yearSelector.addEventListener('change', (e) => console.log(year = e.target.value));
+
+monthSelector.addEventListener('change', (e) => console.log(month = e.target.value));
 
 saveButton.addEventListener('click', () => {
     const patients = [];
