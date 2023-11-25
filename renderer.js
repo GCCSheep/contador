@@ -4,67 +4,60 @@ const monthSelector = document.querySelector('select.month');
 const table = document.querySelector('table');
 const saveButton = document.querySelector('button.save');
 const cancelButton = document.querySelector('button.cancel');
-let year = '2023';
-let month = '01';
+const sessionPrice = 29.90;
+let oldPatients;
+let currentPatients;
+let year = 2023;
+let month = 1;
 
 window.electronAPI.onGetPatients((_event, patients) => {
-    for (const patient of patients) {
-        insertRow(patient);
-    }
-    const tableRows = table.querySelectorAll('tbody tr');
-    for (const tableRow of tableRows) {
-        setSaveBtnTriggerers(tableRow);
-        setDeleteRowTriggerers(tableRow);
-    }
-    generateTBodyCopy();
+    currentPatients = patients;
+    oldPatients = structuredClone(currentPatients);
+    loadPatientsTable(currentPatients);
 });
 
 addPatientButton.addEventListener('click', () => {
-    insertRow({
+    const patient = {
         name: '',
         careDay: '',
         psychologicalAssessment: '',
         totalSessions: '',
         heldSessions: '',
-        duePayment: '',
-    });
-    setSaveBtnTriggerers(table.querySelector('tbody tr:last-of-type'));
-    setDeleteRowTriggerers(table.querySelector('tbody tr:last-of-type'));
-    saveButton.removeAttribute('disabled');
+    };
+    addPatientRow(patient);
 });
 
-yearSelector.addEventListener('change', (e) => console.log(year = e.target.value));
+yearSelector.addEventListener('change', (e) => {
+    updatePatients();
+    year = Number(e.target.value);
+    loadPatientsTable(currentPatients);
+});
 
-monthSelector.addEventListener('change', (e) => console.log(month = e.target.value));
+monthSelector.addEventListener('change', (e) => {
+    updatePatients();
+    month = Number(e.target.value);
+    loadPatientsTable(currentPatients);
+});
 
 saveButton.addEventListener('click', () => {
-    const patients = [];
-    const tableRows = table.querySelectorAll('tbody:first-of-type tr');
-    for (const tableRow of tableRows) {
-        console.log(tableRow.querySelector('.psychological-assessment input').value);
-        patients.push({
-            name: tableRow.querySelector('.name input').value,
-            careDay: tableRow.querySelector('.care-day input').value,
-            psychologicalAssessment: tableRow.querySelector('.psychological-assessment input').hasAttribute('checked'),
-            totalSessions: tableRow.querySelector('.total-sessions input').value,
-            heldSessions: tableRow.querySelector('.held-sessions input').value,
-            duePayment: tableRow.querySelector('.due-payment input').value,  
-        });
-    }
-    table.querySelector('tbody:last-of-type').remove();
-    generateTBodyCopy();
-    window.electronAPI.setPatients(JSON.stringify(patients));
-    saveButton.setAttribute('disabled', '');
+    updatePatients();
+    oldPatients = structuredClone(currentPatients);
+    window.electronAPI.setPatients(JSON.stringify(currentPatients));
 });
 
 cancelButton.addEventListener('click', () => {
-    table.querySelector('tbody').remove();
-    table.querySelector('tbody').removeAttribute('hidden');
-    generateTBodyCopy();
-    saveButton.setAttribute('disabled', '');
+    currentPatients = structuredClone(oldPatients);
+    loadPatientsTable(currentPatients);
 });
 
-function insertRow(patient) {
+function loadPatientsTable() {
+    const tableRows = table.querySelectorAll('tbody tr');
+    for (const tableRow of tableRows) tableRow.remove();
+    if (!currentPatients[year] || !currentPatients[year][month]) return;
+    for (const patient of currentPatients[year][month]) addPatientRow(patient);
+}
+
+function addPatientRow(patient) {
     const tableRow = document.createElement('tr');
     const nameData = document.createElement('td');
     const careDayData = document.createElement('td');
@@ -78,7 +71,6 @@ function insertRow(patient) {
     const psychologicalAssessmentInput = document.createElement('input')
     const totalSessionsInput = document.createElement('input');
     const heldSessionsInput = document.createElement('input');
-    const duePaymentInput = document.createElement('input');
     const deleteButton = document.createElement('button');
     nameInput.type = 'text';
     nameInput.value = patient.name;
@@ -93,10 +85,6 @@ function insertRow(patient) {
     heldSessionsInput.type = 'number';
     heldSessionsInput.min = '0';
     heldSessionsInput.value = patient.heldSessions;
-    duePaymentInput.type = 'number';
-    duePaymentInput.min = '0';
-    duePaymentInput.step = '0.01';
-    duePaymentInput.value = patient.duePayment;
     deleteButton.classList.add('delete-patient');
     deleteButton.setAttribute('title', 'Excluir paciente');
     deleteButton.innerText = '+';
@@ -111,8 +99,6 @@ function insertRow(patient) {
     totalSessionsData.insertAdjacentElement('beforeend', totalSessionsInput);
     heldSessionsData.classList.add('held-sessions');
     heldSessionsData.insertAdjacentElement('beforeend', heldSessionsInput);
-    duePaymentData.classList.add('due-payment');
-    duePaymentData.insertAdjacentElement('beforeend', duePaymentInput);
     actionsData.classList.add('actions');
     actionsData.insertAdjacentElement('beforeend', deleteButton);
     tableRow.insertAdjacentElement('beforeend', nameData);
@@ -125,28 +111,19 @@ function insertRow(patient) {
     table.querySelector('tbody').insertAdjacentElement('beforeend', tableRow);
 }
 
-function generateTBodyCopy() {
-    table.insertAdjacentElement('beforeend', table.querySelector('tbody').cloneNode(true));
-    table.querySelector('tbody:last-of-type').setAttribute('hidden', '');
-    const tableRows = table.querySelectorAll('tbody:last-of-type tr');
+function updatePatients() {
+    const patients = [];
+    const tableRows = table.querySelectorAll('tbody tr');
     for (const tableRow of tableRows) {
-        setSaveBtnTriggerers(tableRow);
-        setDeleteRowTriggerers(tableRow);
+        patients.push({
+            name: tableRow.querySelector('.name input').value,
+            careDay: tableRow.querySelector('.care-day input').value,
+            psychologicalAssessment: tableRow.querySelector('.psychological-assessment input').hasAttribute('checked'),
+            totalSessions: tableRow.querySelector('.total-sessions input').value,
+            heldSessions: tableRow.querySelector('.held-sessions input').value, 
+        });
     }
-}
-
-function setSaveBtnTriggerers(tableRow) {
-    const saveBtnTriggerers = tableRow.querySelectorAll('input, button.delete-patient');
-    for (const saveBtnTriggerer of saveBtnTriggerers) {
-        saveBtnTriggerer.addEventListener(
-            saveBtnTriggerer.nodeName === 'INPUT' ? 'input' : 'click',
-            () => saveButton.removeAttribute('disabled')
-        );
-    }
-}
-
-function setDeleteRowTriggerers(tableRow) {
-    tableRow
-        .querySelector('button.delete-patient')
-        .addEventListener('click', (e) => e.target.parentElement.parentElement.remove());
+    if (!currentPatients[year]) currentPatients[year] = [];
+    if (!currentPatients[year][month]) currentPatients[year][month] = [];
+    currentPatients[year][month] = patients;
 }
