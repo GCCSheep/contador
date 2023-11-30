@@ -12,14 +12,24 @@ body {
 }
 
 header {
+    margin-bottom: 10px;
+}
+
+h1 {
+    margin: 0;
+}
+
+nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
 
-h1 {
-    margin: 0;
+select {
+    font: inherit;
+    cursor: pointer;
+    padding: 5px;
 }
 
 button {
@@ -31,19 +41,19 @@ button {
     border-radius: 5px;
 }
 
-button.add-patient,
-button.delete-patient {
+button.add,
+button.delete {
     border-radius: 50%;
 }
 
-button.add-patient {
+button.add {
     background-color: green;
     height: 40px;
     width: 40px;
     font-size: 25px;
 }
 
-button.delete-patient {
+button.delete {
     background-color: crimson;
     transform: rotate(45deg);
     height: 25px;
@@ -51,8 +61,15 @@ button.delete-patient {
     font-size: 15px;
 }
 
-button.delete-patient:active {
+button.delete:active {
     transform: scale(0.9) rotate(45deg);
+}
+
+td.care-days button.add,
+td.care-days button.delete {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
 }
 
 button.save,
@@ -83,13 +100,6 @@ button[disabled]:active {
     background-color: darkgrey;
 }
 
-select {
-    font: inherit;
-    margin-bottom: 10px;
-    cursor: pointer;
-    padding: 5px;
-}
-
 table {
     border-collapse: collapse;
     border: 1px solid black;
@@ -115,13 +125,18 @@ th.name {
     width: 40%;
 }
 
-th.care-day,
+th.care-days,
 th.psychological-assessment,
 th.total-sessions,
 th.held-sessions,
 th.due-payment,
 th.actions {
     width: 10%;
+}
+
+td.care-days {
+    padding: 5px;
+    text-align: right;
 }
 
 input {
@@ -139,4 +154,24 @@ input[type="checkbox"] {
     height: 20px;
     margin: auto;
     cursor: pointer;
+}
+
+input[type="date"] {
+    padding: 0;
+    width: 100px;
+    height: 30px;
+    margin-right: 5px;
+}
+
+ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-top: 5px;
+}
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
