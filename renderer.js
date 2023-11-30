@@ -4,7 +4,7 @@ const addPatientButton = document.querySelector('nav button.add');
 const table = document.querySelector('table');
 const saveButton = document.querySelector('button.save');
 const cancelButton = document.querySelector('button.cancel');
-const sessionPrice = 29.90;
+const sessionFee = 29.90;
 let oldPatients;
 let currentPatients;
 let year = 2023;
@@ -81,7 +81,7 @@ function addPatientRow(patient) {
     careDayAddButton.setAttribute('title', 'Adicionar dia de atendimento');
     careDayAddButton.classList.add('add');
     careDayAddButton.addEventListener('click', () => addCareDayItem());
-    for (const careDay of patient.careDays) addCareDayItem(careDay)
+    for (const careDay of patient.careDays) {addCareDayItem(careDay);}
     psychologicalAssessmentInput.type = 'checkbox';
     if (patient.psychologicalAssessment) psychologicalAssessmentInput.setAttribute('checked', '');
     psychologicalAssessmentInput.addEventListener('click', e => e.target.toggleAttribute('checked'));
@@ -118,22 +118,29 @@ function addPatientRow(patient) {
     table.querySelector('tbody').insertAdjacentElement('beforeend', tableRow);
 
     function addCareDayItem(careDay) {
-        const careDayItem = document.createElement('li');
-        const careDayInput = document.createElement('input');
-        const careDayDeleteButton = document.createElement('button');
-        const min = year.toString() + '-' + ((month < 10 ? '0' : '') + month.toString()) + '-01';
-        const max = year.toString() + '-' + ((month < 10 ? '0' : '') + month.toString()) + '-' + lastDayOfMonth(month);
-        careDayInput.type = 'date';
-        careDayInput.value = careDay ?? min;
-        careDayInput.setAttribute('min', min);
-        careDayInput.setAttribute('max', max);
-        careDayDeleteButton.innerText = '+';
-        careDayDeleteButton.setAttribute('title', 'Excluir dia de atendimento');
-        careDayDeleteButton.classList.add('delete');
-        careDayDeleteButton.addEventListener('click', e => e.target.parentElement.remove());
-        careDayItem.insertAdjacentElement('beforeend', careDayInput);
-        careDayItem.insertAdjacentElement('beforeend', careDayDeleteButton);
-        careDayList.insertAdjacentElement('beforeend', careDayItem);
+        const item = document.createElement('li');
+        const input = document.createElement('input');
+        const absenceButton = document.createElement('button');
+        const deleteButton = document.createElement('button');
+        const minDate = year.toString() + '-' + ((month < 10 ? '0' : '') + month.toString()) + '-01';
+        const maxDate = year.toString() + '-' + ((month < 10 ? '0' : '') + month.toString()) + '-' + lastDayOfMonth(month);
+        input.type = 'date';
+        input.value = careDay ? careDay.value : minDate;
+        input.setAttribute('min', minDate);
+        input.setAttribute('max', maxDate);
+        absenceButton.innerText = '!';
+        absenceButton.setAttribute('title', 'Marcar falta do paciente');
+        absenceButton.classList.add('absence-toggle');
+        absenceButton.addEventListener('click', setPatientItemAbsent);
+        if (careDay && careDay.absent) setPatientItemAbsent();
+        deleteButton.innerText = '+';
+        deleteButton.setAttribute('title', 'Excluir dia de atendimento');
+        deleteButton.classList.add('delete');
+        deleteButton.addEventListener('click', e => e.target.parentElement.remove());
+        item.insertAdjacentElement('beforeend', input);
+        item.insertAdjacentElement('beforeend', absenceButton);
+        item.insertAdjacentElement('beforeend', deleteButton);
+        careDayList.insertAdjacentElement('beforeend', item);
 
         function lastDayOfMonth(month) {
             return ( 
@@ -142,6 +149,11 @@ function addPatientRow(patient) {
                 year % 4 === 0 && year % 100 != 0 ? '29' : '28'
             );
         }
+
+        function setPatientItemAbsent() {
+            input.classList.toggle('absent');
+            absenceButton.classList.toggle('absent');
+        }
     }
 }
 
@@ -149,7 +161,9 @@ function updatePatients() {
     const patients = [];
     const tableRows = table.querySelectorAll('tbody tr');
     for (const tableRow of tableRows) {
-        const careDays = [...tableRow.querySelectorAll('.care-days input')].map(input => input.value);
+        const careDays =
+            [...tableRow.querySelectorAll('.care-days input')]
+            .map(input => Object({value: input.value, absent: input.classList.contains('absent')}));
         patients.push({
             name: tableRow.querySelector('.name input').value,
             careDays: careDays,
