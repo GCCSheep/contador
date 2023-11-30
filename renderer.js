@@ -106,6 +106,7 @@ function addPatientRow(patient) {
     totalSessionsData.insertAdjacentElement('beforeend', totalSessionsInput);
     heldSessionsData.classList.add('held-sessions');
     heldSessionsData.insertAdjacentElement('beforeend', heldSessionsInput);
+    duePaymentData.classList.add('due-payment');
     actionsData.classList.add('actions');
     actionsData.insertAdjacentElement('beforeend', deleteButton);
     tableRow.insertAdjacentElement('beforeend', nameData);
@@ -131,16 +132,20 @@ function addPatientRow(patient) {
         absenceButton.innerText = '!';
         absenceButton.setAttribute('title', 'Marcar falta do paciente');
         absenceButton.classList.add('absence-toggle');
-        absenceButton.addEventListener('click', setPatientItemAbsent);
-        if (careDay && careDay.absent) setPatientItemAbsent();
+        absenceButton.addEventListener('click', toggleAbsence);
+        if (careDay && careDay.absent) toggleAbsence();
         deleteButton.innerText = '+';
         deleteButton.setAttribute('title', 'Excluir dia de atendimento');
         deleteButton.classList.add('delete');
-        deleteButton.addEventListener('click', e => e.target.parentElement.remove());
+        deleteButton.addEventListener('click', e => {
+            updateDuePayment(input.classList.contains('absent') ? 0 : -1);
+            e.target.parentElement.remove();
+        });
         item.insertAdjacentElement('beforeend', input);
         item.insertAdjacentElement('beforeend', absenceButton);
         item.insertAdjacentElement('beforeend', deleteButton);
         careDayList.insertAdjacentElement('beforeend', item);
+        updateDuePayment(1);
 
         function lastDayOfMonth(month) {
             return ( 
@@ -150,9 +155,14 @@ function addPatientRow(patient) {
             );
         }
 
-        function setPatientItemAbsent() {
+        function toggleAbsence() {
             input.classList.toggle('absent');
             absenceButton.classList.toggle('absent');
+            updateDuePayment(input.classList.contains('absent') ? -1 : 1);
+        }
+
+        function updateDuePayment(factor) {
+            duePaymentData.innerText = 'R$' + (Number(duePaymentData.innerText.replace('R$', '')) + factor * sessionFee).toFixed(2);
         }
     }
 }

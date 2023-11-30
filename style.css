@@ -9,6 +9,7 @@ html {
 body {
     width: 90%;
     margin: 10px auto;
+    background-color: antiquewhite;
 }
 
 header {
@@ -68,7 +69,7 @@ button.absence-toggle {
 }
 
 button.absence-toggle.absent {
-    background-color: crimson;
+    background-color: darkorange;
 }
 
 button.delete:active {
@@ -136,18 +137,31 @@ th.name {
     width: 40%;
 }
 
-th.caredays,
+th.caredays {
+    width: 15%;
+}
+
 th.psychological-assessment,
 th.total-sessions,
 th.held-sessions,
-th.due-payment,
-th.actions {
+th.due-payment {
     width: 10%;
 }
 
+th.actions {
+    width: 5%;
+}
+
 td.care-days {
-    padding: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
     text-align: right;
+}
+
+td.due-payment {
+    text-align: left;
+    padding: 10px;
+    font-size: 14px;
 }
 
 input {
@@ -184,16 +198,8 @@ input[type="checkbox"] {
     cursor: pointer;
 }
 
-input[type="date"] {
-    padding: 3px;
-    width: 105px;
-    height: 30px;
-    margin-right: 5px;
-    border-radius: 5px;
-}
-
 input[type="date"].absent {
-    background-color: pink;
+    -webkit-text-fill-color: darkorange;
 }
 
 ol {
@@ -207,5 +213,4 @@ li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
 }
